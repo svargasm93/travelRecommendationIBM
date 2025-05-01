@@ -119,47 +119,23 @@ function fetchRecommendations() {
     });
   }
   
-  // Función para filtrar recomendaciones basado en la palabra clave
   function searchRecommendations() {
-    const keyword = document.getElementById('search-input').value.toLowerCase();  // Obtener palabra clave y convertir a minúsculas
-    const data = window.recommendationsData;  // Usamos los datos globales
+    const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+    const data = window.recommendationsData;
   
-    const filteredResults = {
-      countries: [],
-      temples: [],
-      beaches: []
-    };
+    const resultsContainer = document.getElementById('recommendations-results');
+    resultsContainer.innerHTML = ''; // Limpiar resultados anteriores
   
-    // Filtrar países
-    data.countries.forEach(country => {
-      const matchedCities = country.cities.filter(city => 
-        city.name.toLowerCase().includes(keyword) || city.description.toLowerCase().includes(keyword)
-      );
-  
-      if (matchedCities.length > 0) {
-        filteredResults.countries.push({
-          name: country.name,
-          cities: matchedCities
-        });
-      }
-    });
-  
-    // Filtrar templos
-    data.temples.forEach(temple => {
-      if (temple.name.toLowerCase().includes(keyword) || temple.description.toLowerCase().includes(keyword)) {
-        filteredResults.temples.push(temple);
-      }
-    });
-  
-    // Filtrar playas
-    data.beaches.forEach(beach => {
-      if (beach.name.toLowerCase().includes(keyword) || beach.description.toLowerCase().includes(keyword)) {
-        filteredResults.beaches.push(beach);
-      }
-    });
-  
-    // Mostrar solo los resultados filtrados
-    displayRecommendations(filteredResults);
+    if (["beach", "beaches"].includes(keyword)) {
+      displayRecommendations({ countries: [], temples: [], beaches: data.beaches });
+    } else if (["temple", "temples"].includes(keyword)) {
+      displayRecommendations({ countries: [], temples: data.temples, beaches: [] });
+    } else if (["country", "countries"].includes(keyword)) {
+      displayRecommendations({ countries: data.countries, temples: [], beaches: [] });
+    } else {
+      // Opcional: Mostrar un mensaje si el keyword no es válido
+      resultsContainer.innerHTML = `<p>No results found for "<strong>${keyword}</strong>". Try "beach", "temple", or "country".</p>`;
+    }
   }
   
   // Función para resetear los resultados
